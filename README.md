@@ -48,7 +48,7 @@ sudo docker container stop metertest              //stop the container
 sudo docker container start metertest             //stop the container
 sudo docker container rm metertest                //remove the container
 sudo docker image ls
-sudo docker image rm [image ID]                   //remove the container image, will trigger redownloading the image, it is recommended to do this every time we upgrade the testnet
+sudo docker image rm [image ID]                   //remove the container image, will trigger redownloading the image at the next docker run, it is recommended to do this every time we upgrade the testnet
 sudo docker container exec -it metertest bash     //launch a bash in the container
 ```
 
