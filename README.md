@@ -27,7 +27,7 @@ Node software is currently provided as docker images.  Please refer to [Ubuntu D
 2. Launch the Meter container
 
 ```
-sudo docker run -e DISCO_SERVER="enode://e1e364d452cc65b97e219ce10bcdbfbb87fb968c2752e3085db5c66dbb9e42ea18b31a5251bbb29bd95973abf6a496f0e213512bc402af76d981779c7e0cd6d1@54.214.120.166:55555"  -e POW_LEADER="54.214.120.166" -e COMMITTEE_SIZE="8" -e DELEGATE_SIZE="8" -v /home/ubuntu/delegates.json:/pos/delegates.json --network host --name metertest -d dfinlab/meter-all-in-one:latest
+sudo docker run -e DISCO_SERVER="enode://3011a0740181881c7d4033a83a60f69b68f9aedb0faa784133da84394120ffe9a1686b2af212ffad16fbba88d0ff302f8edb05c99380bd904cbbb96ee4ca8cfb@35.160.75.220:55555" -e POW_LEADER="35.160.75.220" -e COMMITTEE_SIZE="21" -e DELEGATE_SIZE="21" -v /home/ubuntu/delegates.json:/pos/delegates.json --network host --name metertest -d dfinlab/meter-all-in-one:latest
 ```
 In the above command DISCO_SERVER points to the discovery server for other peers in the network. POW_LEADER points to node that could provide peer information for the PoW chain.  The two IP addresses should be the same.  The committee and delegate size should be configured properly based on the instructions of the test net.
 It will download the latest container and launch a meter full node
@@ -47,9 +47,12 @@ CONTAINER ID        IMAGE                      COMMAND                  CREATED 
 sudo docker container stop metertest              //stop the container
 sudo docker container start metertest             //stop the container
 sudo docker container rm metertest                //remove the container
+sudo docker image ls
+sudo docker image rm [image ID]                   //remove the container image, will trigger redownloading the image, it is recommended to do this every time we upgrade the testnet
 sudo docker container exec -it metertest bash     //launch a bash in the container
 ```
-The log files can be located inside the container, under /var/log/supervisor directory.  If you file any bugs, please remember to attach the logs for PoS in the bug.  After confirming the node is running properly through the log, you could then connect the desktop wallet to your own full node.
+
+The log files can be located inside the container, under /var/log/supervisor directory.  If you file any bugs, please remember to attach the logs for PoS (both the stderr and stdout) in the bug.  After confirming the node is running properly through the log, you could then connect the desktop wallet to your own full node.
 
 3. Download [Meter desktop wallet](https://meter.io/developers) and connect to your own full node
 In the settings of the wallet, under node, you could and connect add your own full node by adding http://IPaddrOfYourNode:8669 .  The icon in the left of the address bar should turn green if everything is running properly.  You could use the explorer inside the wallet to look at the status of the block productions. You should also create an account.  Please make sure you keep the mnemonics in a secure location, you will need them to retrieve your account when we switching between the test nets and it should also work on the future main net.  Please contact a team member to obtain MTRG and MTR test tokens.
@@ -70,10 +73,10 @@ Becoming a delegate node requires staking MTRG tokens.  You will have to have bo
 | 9100                 | node explorers   |
 
 2. Become a candidate
-In the desktop wallet, under the "candidate" tab, you could self elect to be a candidate for delegate node by staking at least 2 MTRG tokens and input all the required information for your node (currently the port configuration is not used, the code will always port 8670 for P2P communications and messaging).  You could have other accounts delegate their votes to you as well to increase the chance of becoming a delegate node.  The candidate transaction is recorded immediately and the node could start to receive votes.  However, you won't become a delegate node until the next k-block even with enough votes.  
+In the desktop wallet, under the "candidate" tab, you could self elect to be a candidate for delegate node by staking at least 2 MTRG tokens and input all the required information for your node (currently the port configuration is not used, the code will always port 8670 for P2P communications and messaging).  You could have other accounts delegate their votes to you as well to increase the chance of becoming a delegate node.  The candidate transaction is recorded immediately and the node could start to receive votes.  However, you won't become a delegate node until the next k-block even with enough votes.  You could check the list of delegate nodes through http://IPaddrOfYourNode:8669/staking/delegates
 
 3. Become a delegate node
-If a candidate receives enough votes, it will become a delegate node.  You could check the list of delegate nodes through http://IPaddrOfYourNode:8669/staking/delegates more APIs will soon be added for additional information regarding to this.
+If a candidate receives enough votes and ranked in the top N candidate nodes, it will become a delegate node. more APIs will soon be added for additional information regarding to this.
 
 4. Become a committee node
-Since the current committee size is the same as the delegate size.  If a delegate is online when the committee starts, it will automatically join the committee.  Within the committee, each committee member will take turns to propose blocks.
+Since the current committee size is the same as the delegate size.  At the next epoch, if the delegate is online when the new committee starts, it will automatically join the committee.  Within the committee, each committee member will take turns to propose blocks.  We are still implementing the rpc interface for display committee information.  However, if you search the log, you will find "I am in committee"
